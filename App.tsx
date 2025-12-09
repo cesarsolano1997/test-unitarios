@@ -1,45 +1,38 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React from 'react'
+import { NavigationContainer } from '@react-navigation/native'
+import { createStackNavigator } from '@react-navigation/stack'
+import ProductsScreen from './src/modules/Products/screens/Products.screen'
+import DetailProductScreen from './src/modules/Products/screens/DetailProduct.screen'
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+const Stack = createStackNavigator()
 
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
-
+function App () {
   return (
-    <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
-    </SafeAreaProvider>
-  );
+    <NavigationContainer>
+      <Stack.Navigator
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: '#007AFF'
+          },
+          headerTintColor: '#FFFFFF',
+          headerTitleStyle: {
+            fontWeight: 'bold'
+          }
+        }}
+      >
+        <Stack.Screen
+          name='Products'
+          component={ProductsScreen}
+          options={{ title: 'Products' }}
+        />
+        <Stack.Screen
+          name='DetailProduct'
+          component={DetailProductScreen}
+          options={{ title: 'Product Details' }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  )
 }
 
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
-
-  return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
-
-export default App;
+export default App
