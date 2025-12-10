@@ -8,7 +8,7 @@ import {
 } from 'react-native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { RouteProp } from '@react-navigation/native'
-import { RootStackParamList } from '../../../../App'
+
 import {
   Button,
   Typography,
@@ -17,6 +17,7 @@ import {
   PriceDisplay,
   StockIndicator
 } from '../../../design'
+import { RootStackParamList } from '../../../navigation/Root.stack'
 
 type DetailProductScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
