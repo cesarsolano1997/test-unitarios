@@ -1,21 +1,22 @@
 import React, { useState } from 'react'
 import {
   View,
-  Text,
   StyleSheet,
   Image,
-  TouchableOpacity,
   ScrollView,
   Alert
 } from 'react-native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { RouteProp } from '@react-navigation/native'
-import Product from '../models/IProduct'
-
-type RootStackParamList = {
-  Products: undefined
-  DetailProduct: { product: Product }
-}
+import { RootStackParamList } from '../../../../App'
+import {
+  Button,
+  Typography,
+  FavoriteButton,
+  QuantitySelector,
+  PriceDisplay,
+  StockIndicator
+} from '../../../design'
 
 type DetailProductScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -64,11 +65,11 @@ const DetailProductScreen = ({ navigation, route }: Props) => {
       await new Promise(resolve => setTimeout(resolve, 500))
 
       Alert.alert(
-        'Success',
-        `${quantity} ${quantity === 1 ? 'item' : 'items'} added to cart!`,
+        '¡Éxito!',
+        `${quantity} ${quantity === 1 ? 'item' : 'items'} fue agregado al carrito`,
         [
           {
-            text: 'Continue Shopping',
+            text: 'Continuar comprando',
             onPress: () => navigation.goBack()
           },
           {
@@ -109,119 +110,106 @@ const DetailProductScreen = ({ navigation, route }: Props) => {
           style={styles.productImage}
           testID="detail-product-image"
         />
-        <TouchableOpacity
-          style={styles.favoriteButton}
-          onPress={handleToggleFavorite}
-          testID="favorite-button"
-        >
-          <Text style={styles.favoriteIcon}>
-            {isFavorite ? '❤️' : '🤍'}
-          </Text>
-        </TouchableOpacity>
+        <FavoriteButton
+          isFavorite={isFavorite}
+          onToggle={handleToggleFavorite}
+        />
       </View>
 
       <View style={styles.infoContainer}>
         <View style={styles.headerContainer}>
           <View style={styles.titleContainer}>
-            <Text style={styles.productName} testID="detail-product-name">
+            <Typography
+              variant="h2"
+              testID="detail-product-name"
+              style={styles.productName}
+            >
               {product.name}
-            </Text>
-            <Text style={styles.productCategory} testID="detail-product-category">
-              {product.category}
-            </Text>
+            </Typography>
+            <Typography
+              variant="label"
+              color="#666666"
+              testID="detail-product-category"
+              style={styles.productCategory}
+            >
+              {product.category.toUpperCase()}
+            </Typography>
           </View>
         </View>
 
-        <Text style={styles.productPrice} testID="detail-product-price">
-          ${product.price.toFixed(2)}
-        </Text>
+        <PriceDisplay
+          price={product.price}
+          size="large"
+          testID="detail-product-price"
+        />
 
-        <View style={styles.stockContainer}>
-          <Text
-            style={[
-              styles.stockText,
-              isOutOfStock && styles.outOfStock,
-              product.stock < 5 && !isOutOfStock && styles.lowStock
-            ]}
-            testID="detail-product-stock"
-          >
-            {isOutOfStock
-              ? 'Out of stock'
-              : `${product.stock} items in stock`}
-          </Text>
-        </View>
+        <StockIndicator
+          stock={product.stock}
+          testID="detail-product-stock"
+        />
 
         <View style={styles.divider} />
 
-        <Text style={styles.sectionTitle}>Description</Text>
-        <Text style={styles.productDescription} testID="detail-product-description">
+        <Typography variant="h3" style={styles.sectionTitle}>
+          Descripción
+        </Typography>
+        <Typography
+          variant="body"
+          testID="detail-product-description"
+          style={styles.description}
+        >
           {product.description}
-        </Text>
+        </Typography>
 
         <View style={styles.divider} />
 
         {!isOutOfStock && (
           <>
-            <Text style={styles.sectionTitle}>Quantity</Text>
-            <View style={styles.quantityContainer}>
-              <TouchableOpacity
-                style={[
-                  styles.quantityButton,
-                  quantity === 1 && styles.quantityButtonDisabled
-                ]}
-                onPress={handleDecreaseQuantity}
-                disabled={quantity === 1}
-                testID="decrease-quantity-button"
-              >
-                <Text style={styles.quantityButtonText}>-</Text>
-              </TouchableOpacity>
-
-              <Text style={styles.quantityText} testID="quantity-text">
-                {quantity}
-              </Text>
-
-              <TouchableOpacity
-                style={[
-                  styles.quantityButton,
-                  quantity >= product.stock && styles.quantityButtonDisabled
-                ]}
-                onPress={handleIncreaseQuantity}
-                disabled={quantity >= product.stock}
-                testID="increase-quantity-button"
-              >
-                <Text style={styles.quantityButtonText}>+</Text>
-              </TouchableOpacity>
-            </View>
+            <Typography variant="h3" style={styles.sectionTitle}>
+              Cantidad
+            </Typography>
+            <QuantitySelector
+              quantity={quantity}
+              maxQuantity={product.stock}
+              onIncrease={handleIncreaseQuantity}
+              onDecrease={handleDecreaseQuantity}
+            />
 
             <View style={styles.totalContainer}>
-              <Text style={styles.totalLabel}>Total:</Text>
-              <Text style={styles.totalPrice} testID="total-price">
+              <Typography variant="h3">Total:</Typography>
+              <Typography
+                variant="h2"
+                color="#007AFF"
+                testID="total-price"
+              >
                 ${getTotalPrice().toFixed(2)}
-              </Text>
+              </Typography>
             </View>
           </>
         )}
       </View>
 
       {!isOutOfStock && (
-        <TouchableOpacity
-          style={[
-            styles.addToCartButton,
-            addingToCart && styles.addToCartButtonDisabled
-          ]}
-          onPress={handleAddToCart}
-          disabled={addingToCart}
-          testID="add-to-cart-button"
-        >
-          <Text style={styles.addToCartButtonText}>
-            {addingToCart ? 'Adding...' : 'Add to Cart'}
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.buttonContainer}>
+          <Button
+            title={addingToCart ? 'Agregando...' : 'Agregar a carrito'}
+            onPress={handleAddToCart}
+            loading={addingToCart}
+            testID="add-to-cart-button"
+            style={styles.addToCartButton}
+          />
+        </View>
       )}
 
       {isOutOfStock && (
-        <View style={styles.outOfStockButton} testID="out-of-stock-button">
-          <Text style={styles.outOfStockButtonText}>Out of Stock</Text>
+        <View style={styles.buttonContainer} testID="out-of-stock-button">
+          <Button
+            title="Out of Stock"
+            onPress={() => {}}
+            variant="danger"
+            disabled
+            style={styles.outOfStockButton}
+          />
         </View>
       )}
     </ScrollView>
@@ -247,25 +235,6 @@ const styles = StyleSheet.create({
     height: '100%',
     resizeMode: 'cover'
   },
-  favoriteButton: {
-    position: 'absolute',
-    top: 16,
-    right: 16,
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4
-  },
-  favoriteIcon: {
-    fontSize: 24
-  },
   infoContainer: {
     padding: 20
   },
@@ -279,36 +248,10 @@ const styles = StyleSheet.create({
     flex: 1
   },
   productName: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333333',
     marginBottom: 8
   },
   productCategory: {
-    fontSize: 14,
-    color: '#666666',
-    textTransform: 'uppercase',
     letterSpacing: 0.5
-  },
-  productPrice: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#007AFF',
-    marginBottom: 16
-  },
-  stockContainer: {
-    marginBottom: 16
-  },
-  stockText: {
-    fontSize: 14,
-    color: '#4CAF50',
-    fontWeight: '500'
-  },
-  lowStock: {
-    color: '#FF9800'
-  },
-  outOfStock: {
-    color: '#F44336'
   },
   divider: {
     height: 1,
@@ -316,44 +259,10 @@ const styles = StyleSheet.create({
     marginVertical: 20
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333333',
     marginBottom: 12
   },
-  productDescription: {
-    fontSize: 16,
-    color: '#666666',
+  description: {
     lineHeight: 24
-  },
-  quantityContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20
-  },
-  quantityButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#007AFF',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  quantityButtonDisabled: {
-    backgroundColor: '#CCCCCC'
-  },
-  quantityButtonText: {
-    fontSize: 24,
-    color: '#FFFFFF',
-    fontWeight: 'bold'
-  },
-  quantityText: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#333333',
-    marginHorizontal: 24,
-    minWidth: 40,
-    textAlign: 'center'
   },
   totalContainer: {
     flexDirection: 'row',
@@ -363,53 +272,25 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12
   },
-  totalLabel: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333333'
-  },
-  totalPrice: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#007AFF'
-  },
-  addToCartButton: {
+  buttonContainer: {
     position: 'absolute',
     bottom: 20,
     left: 20,
-    right: 20,
-    backgroundColor: '#007AFF',
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
+    right: 20
+  },
+  addToCartButton: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 6,
     elevation: 6
   },
-  addToCartButtonDisabled: {
-    backgroundColor: '#CCCCCC'
-  },
-  addToCartButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#FFFFFF'
-  },
   outOfStockButton: {
-    position: 'absolute',
-    bottom: 20,
-    left: 20,
-    right: 20,
-    backgroundColor: '#F44336',
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center'
-  },
-  outOfStockButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#FFFFFF'
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 6
   }
 })
 
