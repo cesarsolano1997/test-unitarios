@@ -18,7 +18,7 @@ describe('App Tests - Products Screen', () => {
     )
 
     // Verificar que aparece el estado de carga inicialmente
-    expect(screen.getByTestId('loading-container')).toBeTruthy()
+    expect(screen.getByTestId('loading-container')).toBeFalsy()
     expect(screen.getByText('Loading products...')).toBeTruthy()
   })
 
