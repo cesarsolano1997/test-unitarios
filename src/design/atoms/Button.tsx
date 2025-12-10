@@ -54,11 +54,13 @@ const Button: React.FC<ButtonProps> = ({
       disabled={isDisabled}
       testID={testID}
     >
-      {loading ? (
+      {loading
+        ? (
         <ActivityIndicator color="#FFFFFF" testID={`${testID}-spinner`} />
-      ) : (
+          )
+        : (
         <Text style={[styles.text, getTextStyle(), textStyle]}>{title}</Text>
-      )}
+          )}
     </TouchableOpacity>
   )
 }

@@ -10,6 +10,7 @@ import {
   ErrorState,
   EmptyState
 } from '../../../design'
+import helper from '../helpers/helper'
 
 type RootStackParamList = {
   Products: undefined
@@ -65,10 +66,7 @@ const ProductsScreen = ({ navigation }: Props) => {
       return
     }
 
-    const filtered = products.filter(product =>
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.category.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    const filtered = helper.onFiltered(products, searchQuery)
 
     setFilteredProducts(filtered)
   }

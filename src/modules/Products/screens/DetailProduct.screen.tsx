@@ -4,7 +4,8 @@ import {
   StyleSheet,
   Image,
   ScrollView,
-  Alert
+  Alert,
+  Text
 } from 'react-native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { RouteProp } from '@react-navigation/native'
@@ -116,6 +117,17 @@ const DetailProductScreen = ({ navigation, route }: Props) => {
           onToggle={handleToggleFavorite}
         />
       </View>
+      {
+        Array.from({ length: 10 }).map((_, index) => (
+          <View
+            key={`key-${index}`}
+            testID={`mi-componente-${index}`}
+          >
+            <Text>Mi texto</Text>
+          </View>
+        ))
+
+      }
 
       <View style={styles.infoContainer}>
         <View style={styles.headerContainer}>
