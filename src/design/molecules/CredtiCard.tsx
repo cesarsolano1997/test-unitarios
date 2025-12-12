@@ -1,5 +1,6 @@
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, Pressable } from 'react-native'
 import React, { FC } from 'react'
+import Animated, { interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated'
 
 type Props = {
     balance: string,
@@ -8,8 +9,75 @@ type Props = {
     expiryDate: string,
     cardType: 'VISA' | 'MASTERCARD',
 }
-
+const DURATION = 500
+const isDirectionX = false
 const CreditCard: FC<Props> = ({ balance, cardNumber, cardHolder, expiryDate, cardType }) => {
+  const isFlipped = useSharedValue(false)
+
+  const regularCardAnimatedStyle = useAnimatedStyle(() => {
+    const spinValue = interpolate(Number(isFlipped.value), [0, 1], [0, 180])
+    const rotateValue = withTiming(`${spinValue}deg`, { duration: DURATION })
+
+    return {
+      transform: [
+        isDirectionX ? { rotateX: rotateValue } : { rotateY: rotateValue }
+      ]
+    }
+  })
+
+  const flippedCardAnimatedStyle = useAnimatedStyle(() => {
+    const spinValue = interpolate(Number(isFlipped.value), [0, 1], [180, 360])
+    const rotateValue = withTiming(`${spinValue}deg`, { duration: DURATION })
+
+    return {
+      transform: [
+        isDirectionX ? { rotateX: rotateValue } : { rotateY: rotateValue }
+      ]
+    }
+  })
+
+  return (
+    <Pressable onPress={() => {
+      isFlipped.value = !isFlipped.value
+    }}>
+      <Animated.View
+        style={[
+          flipCardStyles.regularCard,
+          stylesCard.flipCard,
+          regularCardAnimatedStyle
+        ]}>
+            <FrontCard
+                balance={balance}
+                cardNumber={cardNumber}
+                cardHolder={cardHolder}
+                expiryDate={expiryDate}
+                cardType={cardType}
+            />
+      </Animated.View>
+      <Animated.View
+        style={[
+          flipCardStyles.flippedCard,
+          stylesCard.flipCard,
+          flippedCardAnimatedStyle
+        ]}>
+        <BackCard />
+      </Animated.View>
+    </Pressable>
+
+  )
+}
+
+const flipCardStyles = StyleSheet.create({
+  regularCard: {
+    position: 'absolute',
+    zIndex: 1
+  },
+  flippedCard: {
+    zIndex: 2
+  }
+})
+
+const FrontCard: FC<Props> = ({ balance, cardNumber, cardHolder, expiryDate, cardType }) => {
   return (
         <View style={stylesCard.card}>
             <View style={stylesCard.gradientContainer}>
@@ -40,6 +108,27 @@ const CreditCard: FC<Props> = ({ balance, cardNumber, cardHolder, expiryDate, ca
                 </View>
             </View>
         </View>
+  )
+}
+
+const BackCard = () => {
+  return (
+    <View style={stylesCard.card}>
+            <View style={stylesCard.gradientContainer}>
+                <View style={[stylesCard.gradientLayer, stylesCard.layerBlank]} />
+                <View style={[stylesCard.gradientLayer, stylesCard.layerLight]} />
+                <View style={[stylesCard.gradientLayer, stylesCard.layerMedium]} />
+                <View style={[stylesCard.gradientLayer, stylesCard.layerDark]} />
+            </View>
+            <View style={stylesCard.sectionTop} />
+            <View style={stylesCard.sectionMiddle}>
+                <Text style={[stylesCard.text, stylesCard.textCardNumber]}>****</Text>
+                <Text style={[stylesCard.text, stylesCard.textCardNumber]}>****</Text>
+                <Text style={[stylesCard.text, stylesCard.textCardNumber]}>****</Text>
+                <View style={{ flex: 0.3 }} />
+            </View>
+        </View>
+
   )
 }
 
@@ -109,6 +198,11 @@ const stylesCard = StyleSheet.create({
   },
   labelBottom: {
     color: 'rgba(255,255,255,0.5)'
+  },
+  flipCard: {
+    width: '100%',
+    height: 200,
+    backfaceVisibility: 'hidden'
   }
 
 })
