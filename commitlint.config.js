@@ -5,6 +5,7 @@ module.exports = {
       2,
       'always',
       [
+        'test',
         'feat', // Nueva funcionalidad
         'fix', // Corrección de bugs
         'chore', // Tareas de mantenimiento

@@ -2,8 +2,19 @@ import { expect, jest, test, describe, beforeEach } from '@jest/globals'
 import { NavigationContainer } from '@react-navigation/native'
 import { act, render, screen, waitFor } from '@testing-library/react-native'
 import RootStack from '../src/navigation/Root.stack'
+import ProductsScreen from '../src/modules/Products/screens/Products.screen'
 
 jest.useFakeTimers()
+
+const mockNavigation = {
+  navigate: jest.fn(),
+  goBack: jest.fn(),
+  removeListener: jest.fn(),
+  addListener: jest.fn().mockImplementation((event, callback) => {
+    return { remove: jest.fn() }
+  }),
+  setOptions: jest.fn()
+} as any
 
 describe('App Tests - Products Screen', () => {
   beforeEach(() => {
@@ -12,21 +23,17 @@ describe('App Tests - Products Screen', () => {
 
   test('Debería renderizar la pantalla Products', async () => {
     render(
-      <NavigationContainer>
-        <RootStack />
-      </NavigationContainer>
+      <ProductsScreen navigation={mockNavigation}/>
     )
 
     // Verificar que aparece el estado de carga inicialmente
-    expect(screen.getByTestId('loading-container')).toBeFalsy()
+    expect(screen.getByTestId('loading-container')).toBeTruthy()
     expect(screen.getByText('Loading products...')).toBeTruthy()
   })
 
   test('Debería mostrar los productos después de cargar', async () => {
     render(
-      <NavigationContainer>
-        <RootStack />
-      </NavigationContainer>
+      <ProductsScreen navigation={mockNavigation}/>
     )
 
     // Avanzar los timers para que termine la simulación de carga
@@ -49,9 +56,7 @@ describe('App Tests - Products Screen', () => {
 
   test('Debería mostrar productos específicos después de cargar', async () => {
     render(
-      <NavigationContainer>
-        <RootStack />
-      </NavigationContainer>
+      <ProductsScreen navigation={mockNavigation}/>
     )
 
     // Avanzar los timers
@@ -84,9 +89,7 @@ describe('App Tests - Products Screen', () => {
 
   test('Debería mostrar el estado de carga con spinner', () => {
     render(
-      <NavigationContainer>
-        <RootStack />
-      </NavigationContainer>
+      <ProductsScreen navigation={mockNavigation} />
     )
 
     // Verificar spinner de carga

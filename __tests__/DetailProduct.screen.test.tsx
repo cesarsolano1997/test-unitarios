@@ -11,7 +11,6 @@ jest.spyOn(Alert, 'alert')
 const mockNavigation = {
   navigate: jest.fn(),
   goBack: jest.fn(),
-  addListener: jest.fn(),
   removeListener: jest.fn(),
   setOptions: jest.fn()
 } as any
